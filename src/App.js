@@ -1,118 +1,50 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React,{useState} from "react";
+import {View,Text, FlatList,StyleSheet} from 'react-native';
+import music_data from './music-data';
+import MusicCard from "./components/MusicCard/MusicCard";
+import SearchBar from "./components/SearchBar/SearchBar";
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+function App (){
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  const [list,setList]=useState(music_data);
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  const renderMusic=({item})=> <MusicCard music={item}/>;
+  const renderSeparate = () => <View style={styles.seperator}/>;
+  const handleSearch = (text) => {
+    const filteredList= music_data.filter( music => {
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+      const searchedText = text.toLowerCase();
+      const currentTitle = music.title.toLowerCase();
+      const currentArtist = music.artist.toLowerCase();
+      return currentTitle.indexOf(searchedText)>-1 || currentArtist.indexOf(searchedText)>-1;
+    });
+    setList(filteredList);
   };
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+  return(
+     
+       <View style={styles.container}>
+        <SearchBar onSearch={handleSearch} />
+        <FlatList 
+           keyExtractor={(item) => item.id}
+           data={list}
+           renderItem={renderMusic}
+           ItemSeparatorComponent={renderSeparate}        
+        />
+      </View>
+    
   );
 }
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
 export default App;
+
+const styles = StyleSheet.create({
+  container:{
+    padding:10,
+    flex:1,
+  },
+  seperator:{
+    borderWidth:1,
+    borderColor:'#e0e0e0'
+  },
+})
